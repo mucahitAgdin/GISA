@@ -13,7 +13,7 @@ class OllamaClient:
         self.model = model
         self.timeout = timeout
 
-    def generate(self, prompt: str) -> str:
+    def generate(self, prompt: str, json_mode: bool = False) -> str:
         if not prompt.strip():
             raise OllamaClientError("Prompt must not be empty.")
 
@@ -21,7 +21,13 @@ class OllamaClient:
             "model": self.model,
             "prompt": prompt,
             "stream": False,
+            "options": {
+                "temperature": 0.1,
+            },
         }
+
+        if json_mode:
+            payload["format"] = "json"
 
         try:
             response = requests.post(
