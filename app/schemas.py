@@ -56,9 +56,25 @@ class TriageResult(BaseModel):
         return clean_values
 
 
+def _clean_model_json(raw_json: str) -> str:
+    text = raw_json.strip()
+
+    if text.startswith("```json"):
+        text = text.removeprefix("```json").strip()
+    elif text.startswith("```"):
+        text = text.removeprefix("```").strip()
+
+    if text.endswith("```"):
+        text = text.removesuffix("```").strip()
+
+    return text
+
+
 def parse_triage_json(raw_json: str) -> TriageResult:
+    cleaned_json = _clean_model_json(raw_json)
+
     try:
-        data = json.loads(raw_json)
+        data = json.loads(cleaned_json)
     except json.JSONDecodeError as exc:
         raise ValueError(f"Model output is not valid JSON: {exc}") from exc
 
