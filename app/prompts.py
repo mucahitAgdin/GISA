@@ -56,8 +56,9 @@ Output rules:
 - Do not include extra keys.
 - Keep JSON keys exactly as defined in the schema.
 - Keep enum values exactly as defined in the schema.
-- User-facing text fields should match the issue language when the language is clear.
-- If the issue language is unclear or mixed, use English.
+- All user-facing text fields must be written in clear English.
+- If the GitHub issue is written in another language, translate the meaning into English.
+- Do not copy non-English issue text directly into summary, missing_information, draft_comment, or reasoning_summary.
 - Do not translate technical identifiers, error messages, package names, file names, commands, stack traces, or URLs.
 
 Allowed issue types:
@@ -70,22 +71,28 @@ Priority rules:
 - P3: minor bug, question, documentation, cleanup, or low-impact improvement.
 
 Triage rules:
-- Use needs-info when key details are missing, such as reproduction steps, expected behavior, actual behavior, environment, logs, screenshots, or version information.
+- Use issue_type "needs-info" when key details are missing, such as reproduction steps, expected behavior, actual behavior, environment, logs, screenshots, or version information.
+- If the issue reports a crash but lacks reproduction steps or logs, use issue_type "needs-info".
+- Do not use issue_type "bug" when the report is too incomplete to investigate.
 - Do not claim a root cause is certain unless the issue provides strong evidence.
 - Do not say the issue is fixed.
 - Do not classify as duplicate unless the issue itself provides explicit duplicate evidence.
 - Suggested labels are only suggestions. Do not imply that labels were applied.
-- Keep the summary specific and non-repetitive.
+- missing_information must contain separate short English items, not one long combined sentence.
+- Keep the summary specific, translated into English, and non-repetitive.
 - Keep the reasoning_summary short and user-safe. Do not reveal hidden chain-of-thought.
 
 Draft comment rules:
+- Write the draft comment in simple professional English.
 - Thank the reporter briefly.
-- Summarize the issue in one short sentence.
+- Summarize the issue in one short English sentence.
 - Ask only for missing information that is not already provided.
 - Suggest one clear next step.
 - Keep it concise, natural, and non-repetitive.
+- Do not repeat words, questions, or requests.
 - Do not overpromise.
 - Do not say that you will fix the issue.
+- Do not ask whether you can help.
 
 JSON schema:
 {json.dumps(schema, indent=2)}
