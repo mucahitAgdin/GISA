@@ -3,7 +3,7 @@ from typing import Any, Dict
 from pydantic import ValidationError
 
 from app.infrastructure.llm_client import OllamaClient, OllamaClientError
-from app.prompts import build_triage_prompt
+from app.prompts.triage_prompt import build_triage_prompt
 from app.domain.triage import TriageResult, parse_triage_json
 
 
