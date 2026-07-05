@@ -88,6 +88,11 @@ _INCONSISTENT_REASONING_MARKERS = [
     "no actual behavior",
     "no screenshots",
     "more information",
+    "additional information",
+    "without additional",
+    "difficult to determine",
+    "difficult to investigate",
+    "cannot investigate",
     "would help",
     "lack of",
     "given the lack",
@@ -165,6 +170,27 @@ def _safe_complete_report_reasoning() -> str:
     )
 
 
+def _format_missing_information_items(missing_information: List[str]) -> str:
+    if len(missing_information) == 1:
+        return missing_information[0]
+
+    if len(missing_information) == 2:
+        return f"{missing_information[0]} and {missing_information[1]}"
+
+    return f"{', '.join(missing_information[:-1])}, and {missing_information[-1]}"
+
+
+def _safe_needs_info_comment(summary: str, missing_information: List[str]) -> str:
+    clean_summary = " ".join(summary.split()).strip().rstrip(".")
+    missing_items = _format_missing_information_items(missing_information)
+
+    return (
+        f"GISA identified this issue: {clean_summary}. "
+        f"To triage this, share {missing_items}. "
+        "This will help GISA narrow the failure path."
+    )
+
+
 def normalize_triage_result(
     result: TriageResult,
     provided_evidence: Optional[Dict[str, bool]] = None,
@@ -187,8 +213,12 @@ def normalize_triage_result(
         if _contains_marker(reasoning_summary, _INCONSISTENT_REASONING_MARKERS):
             reasoning_summary = _safe_complete_report_reasoning()
 
-    elif issue_type == "needs-info" and "needs-info" not in suggested_labels:
-        suggested_labels.append("needs-info")
+    elif missing_information:
+        if _contains_marker(draft_comment, _INFO_REQUEST_MARKERS):
+            draft_comment = _safe_needs_info_comment(result.summary, missing_information)
+
+        if issue_type == "needs-info" and "needs-info" not in suggested_labels:
+            suggested_labels.append("needs-info")
 
     return result.model_copy(
         update={
