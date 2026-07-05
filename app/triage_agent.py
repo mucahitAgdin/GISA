@@ -4,7 +4,7 @@ from pydantic import ValidationError
 
 from app.infrastructure.llm_client import OllamaClient, OllamaClientError
 from app.prompts import build_triage_prompt
-from app.schemas import TriageResult, parse_triage_json
+from app.domain.triage import TriageResult, parse_triage_json
 
 
 class TriageAgentError(Exception):

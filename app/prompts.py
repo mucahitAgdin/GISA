@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict, List
 
-from app.schemas import triage_schema_json
+from app.domain.triage import triage_schema_json
 
 
 def _truncate_text(value: str, limit: int) -> str:
