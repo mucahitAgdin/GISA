@@ -28,7 +28,7 @@ def analyze_command(args: argparse.Namespace) -> int:
     )
 
     try:
-        result = use_case.execute(repo=args.repo, issue_number=args.issue)
+        result = use_case.execute(repo=args.repo, issue_number=args.issue, max_comments=args.max_comments)
     except GitHubClientError as exc:
         console.print(f"[bold red]GitHub fetch failed:[/bold red] {exc}")
         return 1
@@ -47,6 +47,12 @@ def build_parser() -> argparse.ArgumentParser:
     analyze_parser = subparsers.add_parser("analyze", help="Fetch and analyze a GitHub issue")
     analyze_parser.add_argument("--repo", required=True, help="GitHub repository in owner/repo format")
     analyze_parser.add_argument("--issue", required=True, type=int, help="GitHub issue number")
+    analyze_parser.add_argument(
+        "--max-comments",
+        type=int,
+        default=20,
+        help="Maximum issue comments to fetch. Use 0 for evaluation without comments.",
+    )
     analyze_parser.set_defaults(func=analyze_command)
 
     return parser

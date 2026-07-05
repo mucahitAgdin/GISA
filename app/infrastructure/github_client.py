@@ -52,16 +52,22 @@ class GitHubClient:
         except ValueError as exc:
             raise GitHubClientError("GitHub returned invalid JSON.") from exc
 
-    def fetch_issue(self, repo: str, issue_number: int) -> Dict[str, Any]:
+    def fetch_issue(self, repo: str, issue_number: int, max_comments: int = 20) -> Dict[str, Any]:
         if "/" not in repo or repo.count("/") != 1:
             raise GitHubClientError("Repo must use the format owner/repo.")
+
+        if max_comments < 0:
+            raise GitHubClientError("max_comments must be 0 or greater.")
 
         issue = self._get(f"/repos/{repo}/issues/{issue_number}")
 
         if "pull_request" in issue:
             raise GitHubClientError("This GitHub item is a pull request, not a plain issue.")
 
-        comments = self._get(f"/repos/{repo}/issues/{issue_number}/comments?per_page=20")
+        comments: List[Dict[str, Any]] = []
+        if max_comments > 0:
+            comments_to_fetch = min(max_comments, 100)
+            comments = self._get(f"/repos/{repo}/issues/{issue_number}/comments?per_page={comments_to_fetch}")
 
         return {
             "repo": repo,
