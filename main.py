@@ -2,6 +2,7 @@ import argparse
 
 from rich.console import Console
 
+from app.application.analyze_issue import AnalyzeIssueUseCase
 from app.config import load_settings
 from app.infrastructure.github_client import GitHubClient, GitHubClientError
 from app.infrastructure.llm_client import OllamaClient
@@ -20,21 +21,22 @@ def analyze_command(args: argparse.Namespace) -> int:
         host=settings.ollama_host,
         model=settings.ollama_model,
     )
-    agent = TriageAgent(llm_client=llm_client)
+    triage_agent = TriageAgent(llm_client=llm_client)
+    use_case = AnalyzeIssueUseCase(
+        issue_fetcher=github_client,
+        triage_agent=triage_agent,
+    )
 
     try:
-        issue = github_client.fetch_issue(repo=args.repo, issue_number=args.issue)
+        result = use_case.execute(repo=args.repo, issue_number=args.issue)
     except GitHubClientError as exc:
         console.print(f"[bold red]GitHub fetch failed:[/bold red] {exc}")
         return 1
-
-    try:
-        triage = agent.analyze_issue(issue)
     except TriageAgentError as exc:
         console.print(f"[bold red]Triage failed:[/bold red] {exc}")
         return 1
 
-    render_analysis(issue=issue, triage=triage)
+    render_analysis(issue=result.issue, triage=result.triage)
     return 0
 
 
