@@ -1,0 +1,221 @@
+{
+  "name": "Expensify/App resolved issue triage evaluation set",
+  "purpose": "Use real closed bug issues and merged PRs as offline references for evaluating GISA triage output.",
+  "cases": [
+    {
+      "id": "expensify-94507-sort-expenses-attendees",
+      "repo": "Expensify/App",
+      "issue": {
+        "number": 94507,
+        "title": "[$250] Expense - Unable to sort expenses by Attendees and Per attendee",
+        "state": "CLOSED",
+        "closedAt": "2026-07-03T09:12:07Z",
+        "url": "https://github.com/Expensify/App/issues/94507",
+        "labels": [
+          "Reviewing",
+          "Engineering",
+          "Daily",
+          "Bug"
+        ],
+        "body": "If you haven’t already, check out our [contributing guidelines](https://github.com/Expensify/ReactNativeChat/blob/main/contributingGuides/CONTRIBUTING.md) for onboarding and email contributors@expensify.com to request to join our Slack channel!\n___\n\n**Version Number:** 9.4.19-1\n**Reproducible in staging?:** Yes\n**Reproducible in production?:** N/A - new feature, doesn't exist in prod\n**If this was caught during regression testing, add the test name, ID and link from BrowserStack:** https://github.com/Expensify/App/pull/94124\n**Email or phone of affected tester (no customers):** sdjnoisdjdosijsonssjo@gmail.com\n**Issue reported by:** Applause Internal Team\n**Bug source:** Exploratory - Significant User Experience Deterioration\n**Device used:** Mac 26.5 / Chrome\n**App Component:** Money Requests\n\n## Action Performed:\nPrecondition:\n- Enable Rules.\n- Enable Attendee tracking in Rules settings.\n\n1. Go to staging.new.expensify.com\n2. Go to workspace chat.\n3. Create two expenses.\n4. Go to Spend > Expenses.\n5. Click Display > Edit columns.\n6. Select Attendees and Per attendee > Save.\n7. Click Attendees and Per attendee.\n→ Expenses can be sorted by Attendees and Per attendee on Spend > Expenses.\n8. Go to Inbox.\n9. Open the report.\n10. Click Columns.\n11 Select Attendees and Per attendee > Save.\n12. Click Attendees and Per attendee.\n\n## Expected Result:\nExpenses can be sorted by Attendees and Per attendee in expense report (similar to Spend > Expenses).\n\n## Actual Result:\nExpenses cannot be sorted by Attendees and Per attendee in expense report (similar to Spend > Expenses).\n\n## Workaround:\nUnknown\n\n## Platforms:\n- [ ] Android: App\n- [ ] Android: mWeb Chrome\n- [ ] iOS: App\n- [ ] iOS: mWeb Safari\n- [ ] iOS: mWeb Chrome\n- [ ] Windows: Chrome\n- [x] MacOS: Chrome Safari\n\n## Screenshots/Videos\n\nhttps://github.com/user-attachments/assets/5c4fe6b6-ee6e-4a67-b7fa-dcdcbe00392a\n\n[View all open jobs on GitHub](https://github.com/Expensify/App/issues?q=is%3Aopen+is%3Aissue+label%3A%22Help+Wanted%22)\n\n\n> **Applause Internal Information**\n> Exported by: Mita Rachim\n> Bug ID: 7190137\n<details><summary>Upwork Automation - Do Not Edit</summary>\n    <ul>\n        <li>Upwork Job URL: <a href=\"https://www.upwork.com/jobs/~022069926117744152527\">https://www.upwork.com/jobs/~022069926117744152527</a></li>\n        <li>Upwork Job ID: 2069926117744152527</li>\n        <li>Last Price Increase: 2026-06-24</li>\n    </ul>\n</details>"
+      },
+      "fix_pr": {
+        "number": 94511,
+        "title": "Make Attendees and Per attendee columns sortable in expense report view",
+        "state": "MERGED",
+        "mergedAt": "2026-07-02T09:11:28Z",
+        "url": "https://github.com/Expensify/App/pull/94511",
+        "labels": [],
+        "changed_files": [
+          "src/libs/ReportUtils.ts",
+          "src/libs/TransactionUtils/index.ts",
+          "tests/unit/ReportUtilsTest.ts"
+        ],
+        "body_preview": "### Explanation of Change\n\nThe report-view transactions table and the Search (Spend → Expenses) table use two independent sorting paths. PR #94124 added the **Attendees** and **Per attendee** columns to the single-report column picker, but the report-view sort path in `src/libs/ReportUtils.ts` was never updated, so these columns rendered as non-sortable in an expense report even though they are sortable on Search.\n\nThis PR brings the report-view sort path to parity with Search:\n\n- Adds `ATTENDEES` and `TOTAL_PER_ATTENDEE` to the `sortableColumnNames` allow-list (read by `isSortableColumnName`, which `MoneyRequestReportTableHeader` uses to decide whether a header is sortable).\n- Adds matching `case`s to `getTransactionSortValue`, mirroring the Search implementation in `SearchUIUtils.ts`: **Attendees** sorts by attendee count, **Per attendee** sorts by `amount / attendeeCount` (0 when there are no attendees).\n- Also adds `POSTED` to the report-view sort path (sortable on Search but previously not in the report view), with unit tests.\n- Adds unit tests covering the new sort values and the updated sortable-column allow-list.\n\n### Fixed Issues\n\n$ https://github.com/Expensify/App/issues/94507\nPROPOSAL: https://github.com/Expensify/App/issues/94507#issuecomment-4793665527\n\n### Tests\n\nPreconditions:\n* Large screen Web only.\n* Create a workspace\n* Enable Rules.\n* Enable Attendee tracking in Rules settings.\n\n\n1. Go to staging.new.expensify.com.\n2. Open a workspace chat.\n3. Create two expenses: one with 1 attendee and one with 2 attendees.\n4. Open the report.\n5. Click Columns.\n6. Select Attendees and Per attendee, then click Save.\n7. Click the Attendees column header.\n8. Click the Per attendee column header.\n9. Verify that expenses can be sorted by both Attendees and Per attendee "
+      },
+      "expected_triage": {
+        "issue_type": "bug",
+        "priority_range": [
+          "P2"
+        ],
+        "evaluation_focus": "Sorting bug with clear repro and focused fix files."
+      },
+      "leakage_rule": "Do not include fix_pr data in the agent prompt. Use fix_pr only for offline evaluation after the agent output is generated."
+    },
+    {
+      "id": "expensify-94187-approver-missing-approve-todo",
+      "repo": "Expensify/App",
+      "issue": {
+        "number": 94187,
+        "title": "[Submit] Approver doesn’t have Approve todo in Home or Spend page",
+        "state": "CLOSED",
+        "closedAt": "2026-07-02T11:35:48Z",
+        "url": "https://github.com/Expensify/App/issues/94187",
+        "labels": [
+          "Reviewing",
+          "Weekly",
+          "Internal",
+          "Bug"
+        ],
+        "body": "## Action Performed:\n1. Create a Submit WS as User A\n2. Create an expense and submit it to User B\n3. Use this [Adhoc PR](https://github.com/Expensify/App/pull/91943#issuecomment-4766403730) to log in as User B\n4. Check the Spend page for reports to approve\n\n## Expected Result:\nThe report assigned to User B for approval should show in the Spend page under the \"Needs approval\" LHN section.\n\n## Actual Result:\nI can't get it to show in \"Needs approval\" reliably.\n\n\n## Screenshots/Videos\n\nhttps://github.com/user-attachments/assets/e7145470-ca28-4f82-be50-1ae97d7609c8\n\n\n[View all open jobs on GitHub](https://github.com/Expensify/App/issues?q=is%3Aopen+is%3Aissue+label%3A%22Help+Wanted%22)\n\n\n\n<details><summary>Upwork Automation - Do Not Edit</summary>\n    <ul>\n        <li>Upwork Job URL: <a href=\"https://www.upwork.com/jobs/~022069072128307450567\">https://www.upwork.com/jobs/~022069072128307450567</a></li>\n        <li>Upwork Job ID: 2069072128307450567</li>\n        <li>Last Price Increase: 2026-06-22</li>\n    </ul>\n</details>\n\n<details><summary>Issue Owner</summary>Current Issue Owner: @abzokhattab</details>"
+      },
+      "fix_pr": {
+        "number": 94610,
+        "title": "[Submit] Show \"Needs approval\" for Submit approvers in Search/Spend",
+        "state": "MERGED",
+        "mergedAt": "2026-07-02T11:35:47Z",
+        "url": "https://github.com/Expensify/App/pull/94610",
+        "labels": [],
+        "changed_files": [
+          "src/libs/PolicyUtils.ts",
+          "src/libs/ReportUtils.ts",
+          "src/libs/SearchUIUtils.ts",
+          "tests/unit/PolicyUtilsTest.ts",
+          "tests/unit/Search/SearchUIUtilsTest.ts"
+        ],
+        "body_preview": "### Explanation of Change\r\n\r\nA Submit workspace approver couldn't find reports awaiting their approval in the Search/Spend **\"Needs approval\"** section, even when a report was submitted directly to them.\r\n\r\nThe approve suggested search (`SearchUIUtils.getSuggestedSearchesVisibility`) gated the **APPROVE** key on `isPaidGroupPolicy`, which excludes Submit (`submit2026`). So \"Needs approval\" never surfaced for a Submit approver, even though the to-do layer (`isApproveAction`) already treats Submit approvals as valid.\r\n\r\nThis PR aligns the Search visibility with `isApproveAction`:\r\n- `isEligibleForApproveSuggestion` treats a Submit workspace as approval-enabled regardless of `approvalMode`.\r\n- The gate widens from `isPaidGroupPolicy` to `isGroupPolicy`, so a Submit **approver** sees \"Needs approval\" while a plain submitter does not. Collect/Control/Personal are unchanged (`isGroupPolicy` is a strict superset).\r\n\r\n \r\n \r\n### Fixed Issues\r\n\r\n$ https://github.com/Expensify/App/issues/94187\r\nPROPOSAL:\r\n\r\n### Tests\r\n\r\n1. As User A, create a **Submit** workspace.\r\n2. Create an expense and submit it to User B (the approver).\r\n3. Sign in as User B and open **Search → Reports** (Spend): verify the **\"Needs approval\"** section appears and lists the submitted report.\r\n \r\n \r\n### Offline tests\r\n\r\nSuggested-search visibility is derived from already-synced Onyx data, so it behaves identically offline. Same as Tests.\r\n\r\n### QA Steps\r\n\r\nSame as Tests (use an adhoc build to sign in as the approver, User B).\r\n\r\n- [X] Verify that no errors appear in the JS console\r\n\r\n### PR Author Checklist\r\n\r\n- [X] I linked the correct issue in the `### Fixed Issues` section above\r\n- [X] I wrote clear testing steps that cover the changes made in this PR\r\n    - [X] I added steps for local testing in the `Tests"
+      },
+      "expected_triage": {
+        "issue_type": "bug",
+        "priority_range": [
+          "P2"
+        ],
+        "evaluation_focus": "Bug with expected/actual details but missing repro fields; useful for missing-info evaluation."
+      },
+      "leakage_rule": "Do not include fix_pr data in the agent prompt. Use fix_pr only for offline evaluation after the agent output is generated."
+    },
+    {
+      "id": "expensify-95089-review-expense-navigation",
+      "repo": "Expensify/App",
+      "issue": {
+        "number": 95089,
+        "title": "[$250] Home - Review 1 expense opens expense report instead of expense with violation",
+        "state": "CLOSED",
+        "closedAt": "2026-07-02T14:56:05Z",
+        "url": "https://github.com/Expensify/App/issues/95089",
+        "labels": [
+          "Reviewing",
+          "Engineering",
+          "Hourly",
+          "Bug"
+        ],
+        "body": "If you haven’t already, check out our [contributing guidelines](https://github.com/Expensify/ReactNativeChat/blob/main/contributingGuides/CONTRIBUTING.md) for onboarding and email contributors@expensify.com to request to join our Slack channel!\n___\n\n**Version Number:** 9.4.26-0\n**Reproducible in staging?:** Yes\n**Reproducible in production?:** No\n**If this was caught during regression testing, add the test name, ID and link from BrowserStack:** https://github.com/Expensify/App/pull/94299\n**Email or phone of affected tester (no customers):** odinjsdojosdijiossojo@gmail.com\n**Issue reported by:** Applause Internal Team\n**Bug source:** Exploratory - Significant User Experience Deterioration\n**Device used:** Mac 26.5 / Chrome\n**App Component:** Money Requests\n\n## Action Performed:\n1. Go to staging.new.expensify.com\n2. Go to workspace chat.\n3. Create two expenses without category.\n4. Go to Home.\n5. Click Review 2 expenses.\n6. Click Category and select any category.\n7. Close the report view.\n8. Click Review 1 expense.\n\n## Expected Result:\nExpense RHP with missing category will open.\n\n## Actual Result:\nExpense report RHP opens, showing both expenses with and without violation.\n\n## Workaround:\nUnknown\n\n## Platforms:\n- [ ] Android: App\n- [ ] Android: mWeb Chrome\n- [ ] iOS: App\n- [ ] iOS: mWeb Safari\n- [ ] iOS: mWeb Chrome\n- [x] Windows: Chrome\n- [x] MacOS: Chrome Safari\n\n## Screenshots/Videos\n\nhttps://github.com/user-attachments/assets/c450f0c8-d43e-470c-b916-0d9d68836dd3\n\n[View all open jobs on GitHub](https://github.com/Expensify/App/issues?q=is%3Aopen+is%3Aissue+label%3A%22Help+Wanted%22)\n\n\n> **Applause Internal Information**\n> Exported by: Julia Ponikarchuk\n> Bug ID: 7196900\n\n<details><summary>Issue Owner</summary>Current Issue Owner: @truph01</details>\n<details><summary>Upwork Automation - Do Not Edit</summary>\n    <ul>\n        <li>Upwork Job URL: <a href=\"https://www.upwork.com/jobs/~022072670128996661860\">https://www.upwork.com/jobs/~022072670128996661860</a></li>\n        <li>Upwork Job ID: 2072670128996661860</li>\n        <li>Last Price Increase: 2026-07-02</li>\n    </ul>\n</details>"
+      },
+      "fix_pr": {
+        "number": 95163,
+        "title": "[CP Staging] Fix: open flagged expense thread when its report holds multiple transactions",
+        "state": "MERGED",
+        "mergedAt": "2026-07-02T13:44:24Z",
+        "url": "https://github.com/Expensify/App/pull/95163",
+        "labels": [
+          "CP Staging"
+        ],
+        "changed_files": [
+          "src/pages/home/ForYouSection/useReviewFlaggedExpenses.ts",
+          "tests/ui/ForYouSectionTest.tsx",
+          "tests/unit/hooks/useReviewFlaggedExpenses.test.ts"
+        ],
+        "body_preview": "### Explanation of Change\n\nThe \"Review X expenses\" row on Home opened the **whole expense report** when a single flagged expense lived inside a report that still held other (unflagged) transactions, instead of opening the RHP for the flagged expense.\n\nThe handler in `useReviewFlaggedExpenses` decided between \"open the report directly\" and \"open the single transaction thread\" with:\n\n```ts\nif (flaggedExpenses.length === 1 && isMoneyRequestReport(firstFlaggedReport)) { ... }\n```\n\n`isMoneyRequestReport` only checks the report **type** (`isIOUReport || isExpenseReport`), which is always `true` for the OPEN expense reports this hook scans. So `flaggedExpenses.length === 1` alone drove the branch, and the \"open the report directly\" shortcut — intended only for genuine one-transaction reports — fired even when the report contained multiple expenses.\n\nThe fix swaps the type check for the transaction-count check that expresses the real intent, [`isOneTransactionReport`](https://github.com/Expensify/App/blob/989d3ea60e83ab775c6f2a9b62107276b9590ced/src/libs/ReportUtils.ts#L2747) (`report?.transactionCount === 1`):\n\n```ts\nif (flaggedExpenses.length === 1 && isOneTransactionReport(firstFlaggedReport)) { ... }\n```\n\nNow a lone flagged expense inside a multi-transaction report falls through to `navigateToTransactionThread`, opening the RHP for that single flagged expense (matching the Expected Result). The \"open the report directly\" shortcut stays reserved for reports that genuinely hold only one expense.\n\nAdded unit coverage in `tests/unit/hooks/useReviewFlaggedExpenses.test.ts` (lone flagged expense in a 2-transaction report → opens the thread) and UI coverage in `tests/ui/ForYouSectionTest.tsx` for both the multi-transaction (→ thread) and single-transaction (→ report directly) path"
+      },
+      "expected_triage": {
+        "issue_type": "bug",
+        "priority_range": [
+          "P1",
+          "P2"
+        ],
+        "evaluation_focus": "Navigation bug in Home review flow with clear repro and small focused fix."
+      },
+      "leakage_rule": "Do not include fix_pr data in the agent prompt. Use fix_pr only for offline evaluation after the agent output is generated."
+    },
+    {
+      "id": "expensify-95103-mark-unread-state",
+      "repo": "Expensify/App",
+      "issue": {
+        "number": 95103,
+        "title": "LHN - Marking an unread message as unread does not mark the conversation as unread",
+        "state": "CLOSED",
+        "closedAt": "2026-07-02T14:03:34Z",
+        "url": "https://github.com/Expensify/App/issues/95103",
+        "labels": [
+          "Reviewing",
+          "Engineering",
+          "Hourly",
+          "Bug"
+        ],
+        "body": "If you haven’t already, check out our [contributing guidelines](https://github.com/Expensify/ReactNativeChat/blob/main/contributingGuides/CONTRIBUTING.md) for onboarding and email contributors@expensify.com to request to join our Slack channel!\n___\n\n**Version Number:** 9.4.26-0\n**Reproducible in staging?:** Yes\n**Reproducible in production?:** No\n**If this was caught during regression testing, add the test name, ID and link from BrowserStack:** https://test-management.browserstack.com/projects/2219752/test-runs/62923718/folder/13176910/41237480/1534027983?sort=%2Bidentifier\n**Email or phone of affected tester (no customers):** n/n\n**Issue reported by:** Applause Internal Team\n**Bug source:** Regression TC Execution\n**Device used:** Mac 15.4.1 Safari\n**App Component:** Left Hand Navigation (LHN)\n\n## Action Performed:\n1. Go to https://staging.new.expensify.com\n2. Navigate to a unread conversation with some history\n3. Mark a new message as unread\n4. Navigate away from the conversation\n\n## Expected Result:\nThe conversation is marked as unread\nWhen navigating back to the conversation, the new message marker is still displayed on top of the message\n\n## Actual Result:\nMarking an unread message as unread does not mark the conversation as unread, the new message marker is not displayed on top of the message\n\n## Workaround:\nUnknown\n\n## Platforms:\n- [ ] Android: App\n- [ ] Android: mWeb Chrome\n- [ ] iOS: App\n- [ ] iOS: mWeb Safari\n- [ ] iOS: mWeb Chrome\n- [ ] Windows: Chrome\n- [x] MacOS: Chrome Safari\n\n## Screenshots/Videos\n\nhttps://github.com/user-attachments/assets/0fcef33b-e1ad-42be-a63e-46241871841c\n\n[View all open jobs on GitHub](https://github.com/Expensify/App/issues?q=is%3Aopen+is%3Aissue+label%3A%22Help+Wanted%22)\n\n\n> **Applause Internal Information**\n> Exported by: Mita Rachim\n> Bug ID: 7196919\n\n<details><summary>Issue Owner</summary>Current Issue Owner: @VickyStash</details>"
+      },
+      "fix_pr": {
+        "number": 95166,
+        "title": "[CP Staging] Fix marking an unread message as unread does not mark the conversation as unread",
+        "state": "MERGED",
+        "mergedAt": "2026-07-02T11:34:12Z",
+        "url": "https://github.com/Expensify/App/pull/95166",
+        "labels": [
+          "CP Staging"
+        ],
+        "changed_files": [
+          "src/hooks/useMarkAsRead.ts"
+        ],
+        "body_preview": "<!-- If necessary, assign reviewers that know the area or changes well. Feel free to tag any additional reviewers you see fit. -->\r\n\r\n### Explanation of Change\r\n<!-- Explain what your change does and how it addresses the linked issue -->\r\n\r\nThis PR reverts updates made in https://github.com/Expensify/App/pull/94149 for `useMarkAsRead.ts` hook\r\n\r\n### Fixed Issues\r\n<!---\r\n1. Please postfix `$` with a URL link to the GitHub issue this Pull Request is fixing. For example, `$ https://github.com/Expensify/App/issues/<issueID>`.\r\n2. Please postfix  `PROPOSAL:` with a URL link to your GitHub comment, which contains the approved proposal (i.e. the proposal that was approved by Expensify).  For example, `PROPOSAL: https://github.com/Expensify/App/issues/<issueID>#issuecomment-1369752925`\r\n\r\nDo NOT add the special GH keywords like `fixed` etc, we have our own process of managing the flow.\r\nIt MUST be an entire link to the github issue and your comment proposal ; otherwise, the linking and its automation will not work as expected.\r\n\r\nMake sure this section looks similar to this (you can link multiple issues using the same formatting, just add a new line):\r\n\r\n$ https://github.com/Expensify/App/issues/<issueID>\r\n$ https://github.com/Expensify/App/issues/<issueID(comment)>\r\n\r\nDo NOT only link the issue number like this: $ #<issueID>\r\n--->\r\n$ https://github.com/Expensify/App/issues/95103\r\nPROPOSAL: N/A\r\n\r\n\r\n<!--- \r\nIf you want to trigger adhoc build of hybrid app from specific Mobile-Expensify PR please link it like this:\r\n\r\nMOBILE-EXPENSIFY: https://github.com/Expensify/Mobile-Expensify/pull/<PR-number>\r\n\r\n--->\r\n\r\n### Tests\r\n<!---\r\nAdd a numbered list of manual tests you performed that validates your changes work on all platforms, and that there are no regressions present.\r\nAdd any ad"
+      },
+      "expected_triage": {
+        "issue_type": "bug",
+        "priority_range": [
+          "P2"
+        ],
+        "evaluation_focus": "Unread state bug with single-file fix; good focused triage case."
+      },
+      "leakage_rule": "Do not include fix_pr data in the agent prompt. Use fix_pr only for offline evaluation after the agent output is generated."
+    },
+    {
+      "id": "expensify-95093-android-more-button-overlap",
+      "repo": "Expensify/App",
+      "issue": {
+        "number": 95093,
+        "title": "Android - More button overlaps with next step message and is hardly tappable",
+        "state": "CLOSED",
+        "closedAt": "2026-07-02T13:58:03Z",
+        "url": "https://github.com/Expensify/App/issues/95093",
+        "labels": [
+          "Reviewing",
+          "Engineering",
+          "Hourly",
+          "Bug"
+        ],
+        "body": "If you haven’t already, check out our [contributing guidelines](https://github.com/Expensify/ReactNativeChat/blob/main/contributingGuides/CONTRIBUTING.md) for onboarding and email contributors@expensify.com to request to join our Slack channel!\n___\n\n**Version Number:** 9.4.26-0\n**Reproducible in staging?:** Yes\n**Reproducible in production?:** No\n**If this was caught during regression testing, add the test name, ID and link from BrowserStack:** https://github.com/Expensify/App/pull/94392\n**Email or phone of affected tester (no customers):** odinjsdojosdijiossojo@gmail.com\n**Issue reported by:** Applause Internal Team\n**Bug source:** Exploratory - Significant User Experience Deterioration\n**Device used:** Samsung Galaxy S25 FE / Android 16\n**App Component:** Money Requests\n\n## Action Performed:\n1. Launch Expensify app.\n2. Go to workspace chat.\n3. Create an empty report.\n4. Open the report.\n\n## Expected Result:\nMore button will appear above next step message.\n\n## Actual Result:\nMore button overlaps with next step message and is hardly tappable.\n\n## Workaround:\nUnknown\n\n## Platforms:\n- [x] Android: App\n- [ ] Android: mWeb Chrome\n- [ ] iOS: App\n- [ ] iOS: mWeb Safari\n- [ ] iOS: mWeb Chrome\n- [ ] Windows: Chrome\n- [ ] MacOS: Chrome Safari\n\n## Screenshots/Videos\n\n<img width=\"340\" height=\"728\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/23a77c06-4843-4d63-8f40-44aca525ae79\" />\n\n[View all open jobs on GitHub](https://github.com/Expensify/App/issues?q=is%3Aopen+is%3Aissue+label%3A%22Help+Wanted%22)\n\n\n> **Applause Internal Information**\n> Exported by: Svetlana Lazutkina\n> Bug ID: 7196896"
+      },
+      "fix_pr": {
+        "number": 95115,
+        "title": "[CP Staging] [Submit] Fix blockers for submit email submitter",
+        "state": "MERGED",
+        "mergedAt": "2026-07-02T11:20:56Z",
+        "url": "https://github.com/Expensify/App/pull/95115",
+        "labels": [
+          "CP Staging"
+        ],
+        "changed_files": [
+          "src/components/CollapsibleHeaderOnKeyboard/index.native.tsx",
+          "src/components/MoneyReportHeader.tsx",
+          "src/components/MoneyReportHeaderActions/MoneyReportHeaderSecondaryActions.tsx",
+          "src/components/MoneyReportHeaderKYCDropdown.tsx",
+          "src/components/MoneyReportHeaderMoreContent.tsx",
+          "src/hooks/useExpenseActions.ts",
+          "src/hooks/useLifecycleActions.tsx",
+          "src/hooks/useReportSubmitToPopover.tsx",
+          "src/libs/showConfirmModalAfterMoreMenuDismiss.ts",
+          "src/pages/ReportSubmitToContent.tsx"
+        ],
+        "body_preview": "<!-- If necessary, assign reviewers that know the area or changes well. Feel free to tag any additional reviewers you see fit. -->\r\n\r\n### Explanation of Change\r\n<!-- Explain what your change does and how it addresses the linked issue -->\r\n\r\n### Fixed Issues\r\n<!---\r\n1. Please postfix `$` with a URL link to the GitHub issue this Pull Request is fixing. For example, `$ https://github.com/Expensify/App/issues/<issueID>`.\r\n2. Please postfix  `PROPOSAL:` with a URL link to your GitHub comment, which contains the approved proposal (i.e. the proposal that was approved by Expensify).  For example, `PROPOSAL: https://github.com/Expensify/App/issues/<issueID>#issuecomment-1369752925`\r\n\r\nDo NOT add the special GH keywords like `fixed` etc, we have our own process of managing the flow.\r\nIt MUST be an entire link to the github issue and your comment proposal ; otherwise, the linking and its automation will not work as expected.\r\n\r\nMake sure this section looks similar to this (you can link multiple issues using the same formatting, just add a new line):\r\n\r\n$ https://github.com/Expensify/App/issues/<issueID>\r\n$ https://github.com/Expensify/App/issues/<issueID(comment)>\r\n\r\nDo NOT only link the issue number like this: $ #<issueID>\r\n--->\r\n$ https://github.com/Expensify/App/issues/95093\r\n$ https://github.com/Expensify/App/issues/95095\r\n$ https://github.com/Expensify/App/issues/95111\r\n$ https://github.com/Expensify/App/issues/95097\r\n$ https://github.com/Expensify/App/issues/95139\r\nPROPOSAL: N/A\r\n\r\n\r\n<!--- \r\nIf you want to trigger adhoc build of hybrid app from specific Mobile-Expensify PR please link it like this:\r\n\r\nMOBILE-EXPENSIFY: https://github.com/Expensify/Mobile-Expensify/pull/<PR-number>\r\n\r\n--->\r\n\r\n### Tests\r\n<!---\r\nAdd a numbered list of manual tests you performed that validates y"
+      },
+      "expected_triage": {
+        "issue_type": "bug",
+        "priority_range": [
+          "P1",
+          "P2"
+        ],
+        "evaluation_focus": "Android UI/tappability bug; useful for mobile UI impact and priority evaluation."
+      },
+      "leakage_rule": "Do not include fix_pr data in the agent prompt. Use fix_pr only for offline evaluation after the agent output is generated."
+    }
+  ]
+}
