@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, Protocol
 
 from app.domain.triage import TriageResult
-from app.triage_agent import TriageAgent
+from app.application.triage_agent import TriageAgent
 
 
 class IssueFetcher(Protocol):
