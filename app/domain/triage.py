@@ -191,6 +191,16 @@ def _safe_needs_info_comment(summary: str, missing_information: List[str]) -> st
     )
 
 
+def _safe_needs_info_reasoning(missing_information: List[str]) -> str:
+    missing_items = _format_missing_information_items(missing_information)
+
+    return (
+        f"The issue still needs {missing_items} before the report can be triaged reliably. "
+        "The selected priority reflects an incomplete report without evidence of outage, "
+        "security incident, data loss, or a broken critical flow."
+    )
+
+
 def normalize_triage_result(
     result: TriageResult,
     provided_evidence: Optional[Dict[str, bool]] = None,
@@ -216,6 +226,9 @@ def normalize_triage_result(
     elif missing_information:
         if _contains_marker(draft_comment, _INFO_REQUEST_MARKERS):
             draft_comment = _safe_needs_info_comment(result.summary, missing_information)
+
+        if _contains_marker(reasoning_summary, _INCONSISTENT_REASONING_MARKERS):
+            reasoning_summary = _safe_needs_info_reasoning(missing_information)
 
         if issue_type == "needs-info" and "needs-info" not in suggested_labels:
             suggested_labels.append("needs-info")
