@@ -5,7 +5,7 @@ from rich.console import Console
 from app.config import load_settings
 from app.github_client import GitHubClient, GitHubClientError
 from app.llm_client import OllamaClient
-from app.renderer import render_analysis
+from app.presentation.renderer import render_analysis
 from app.triage_agent import TriageAgent, TriageAgentError
 
 
