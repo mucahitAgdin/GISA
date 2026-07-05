@@ -1,0 +1,39 @@
+{
+  "example_metadata": {
+    "repo": "Expensify/App",
+    "issue": 95089,
+    "note": "Complete bug report used to check false missing-info cleanup.",
+    "max_comments": 0,
+    "leakage_note": "Generated without fetched comments to avoid resolved-issue discussion leakage.",
+    "privacy_note": "Full report text is intentionally omitted from generated examples."
+  },
+  "issue_context": {
+    "repo": "Expensify/App",
+    "number": 95089,
+    "title": "[$250] Home - Review 1 expense opens expense report instead of expense with violation",
+    "state": "closed",
+    "labels": [
+      "Reviewing",
+      "Engineering",
+      "Hourly",
+      "Bug"
+    ],
+    "created_at": "2026-07-01T20:30:29Z",
+    "updated_at": "2026-07-02T14:56:16Z",
+    "closed_at": "2026-07-02T14:56:05Z",
+    "total_comments": 11,
+    "fetched_comments_count": 0,
+    "token_used": false
+  },
+  "triage": {
+    "issue_type": "bug",
+    "priority": "P2",
+    "confidence": 0.95,
+    "summary": "Home - Review 1 expense opens expense report instead of expense with violation",
+    "suggested_labels": [],
+    "missing_information": [],
+    "risk_level": "medium",
+    "draft_comment": "GISA identified this issue: Home - Review 1 expense opens expense report instead of expense with violation. Next step: reproduce the reported behavior using the provided evidence, then inspect the likely affected code path.",
+    "reasoning_summary": "The issue includes core triage evidence such as reproduction steps, expected behavior, actual behavior, version, environment, and supporting media. The selected priority reflects a reproducible product bug without evidence of outage, security incident, data loss, or a broken critical flow."
+  }
+}

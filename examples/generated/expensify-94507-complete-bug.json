@@ -1,0 +1,43 @@
+{
+  "example_metadata": {
+    "repo": "Expensify/App",
+    "issue": 94507,
+    "note": "Complete reproducible bug report with no fetched comments.",
+    "max_comments": 0,
+    "leakage_note": "Generated without fetched comments to avoid resolved-issue discussion leakage.",
+    "privacy_note": "Full report text is intentionally omitted from generated examples."
+  },
+  "issue_context": {
+    "repo": "Expensify/App",
+    "number": 94507,
+    "title": "[$250] Expense - Unable to sort expenses by Attendees and Per attendee",
+    "state": "closed",
+    "labels": [
+      "Reviewing",
+      "Engineering",
+      "Daily",
+      "Bug"
+    ],
+    "created_at": "2026-06-24T21:05:37Z",
+    "updated_at": "2026-07-03T09:12:07Z",
+    "closed_at": "2026-07-03T09:12:07Z",
+    "total_comments": 14,
+    "fetched_comments_count": 0,
+    "token_used": false
+  },
+  "triage": {
+    "issue_type": "bug",
+    "priority": "P2",
+    "confidence": 1.0,
+    "summary": "Expense report sorting by Attendees and Per attendee fails on macOS with Chrome",
+    "suggested_labels": [
+      "bug",
+      "macos",
+      "chrome"
+    ],
+    "missing_information": [],
+    "risk_level": "medium",
+    "draft_comment": "GISA identified that the expense report sorting by Attendees and Per attendee fails on macOS with Chrome. To triage this, inspect the affected sorting path in the provided screenshots or video. This will help GISA narrow down the failure path.",
+    "reasoning_summary": "The issue is confirmed to be a bug affecting macOS users using Chrome. The provided screenshots and video demonstrate the failure, indicating that the sorting functionality does not work as expected. Further investigation is needed to identify the root cause."
+  }
+}
