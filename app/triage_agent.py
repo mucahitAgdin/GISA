@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from pydantic import ValidationError
 
-from app.llm_client import OllamaClient, OllamaClientError
+from app.infrastructure.llm_client import OllamaClient, OllamaClientError
 from app.prompts import build_triage_prompt
 from app.schemas import TriageResult, parse_triage_json
 
