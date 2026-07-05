@@ -1,0 +1,44 @@
+{
+  "example_metadata": {
+    "repo": "Expensify/App",
+    "issue": 95225,
+    "note": "Incomplete report used to check needs-info behavior.",
+    "max_comments": 0,
+    "leakage_note": "Generated without fetched comments to avoid resolved-issue discussion leakage.",
+    "privacy_note": "Full report text is intentionally omitted from generated examples."
+  },
+  "issue_context": {
+    "repo": "Expensify/App",
+    "number": 95225,
+    "title": "[$250] FullStory: 2 min demo button non- functional",
+    "state": "closed",
+    "labels": [
+      "External",
+      "Daily",
+      "Help Wanted",
+      "Bug"
+    ],
+    "created_at": "2026-07-02T18:11:38Z",
+    "updated_at": "2026-07-02T19:31:38Z",
+    "closed_at": "2026-07-02T18:39:32Z",
+    "total_comments": 20,
+    "fetched_comments_count": 0,
+    "token_used": false
+  },
+  "triage": {
+    "issue_type": "needs-info",
+    "priority": "P3",
+    "confidence": 0.8,
+    "summary": "The \"2 min demo\" button on the modal does not function as expected.",
+    "suggested_labels": [
+      "needs-info"
+    ],
+    "missing_information": [
+      "reproducibility confirmation",
+      "version number"
+    ],
+    "risk_level": "medium",
+    "draft_comment": "GISA identified this issue: The \"2 min demo\" button on the modal does not function as expected. To triage this, share reproducibility confirmation and version number. This will help GISA narrow the failure path.",
+    "reasoning_summary": "The issue still needs reproducibility confirmation and version number before the report can be triaged reliably. The selected priority reflects an incomplete report without evidence of outage, security incident, data loss, or a broken critical flow."
+  }
+}
