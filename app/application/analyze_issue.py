@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict, Protocol
 
-from app.schemas import TriageResult
+from app.domain.triage import TriageResult
 from app.triage_agent import TriageAgent
 
 
