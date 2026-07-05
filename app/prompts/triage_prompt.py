@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Any, Dict, List
 
 from app.domain.triage import triage_schema_json
@@ -26,6 +27,142 @@ def _compact_comments(comments: List[Dict[str, Any]], limit: int = 5) -> List[Di
     return compact
 
 
+def _contains_any(text: str, markers: List[str]) -> bool:
+    lowered = text.lower()
+    return any(marker.lower() in lowered for marker in markers)
+
+
+def _extract_field_value(text: str, field_name: str) -> str:
+    patterns = [
+        rf"\*\*{re.escape(field_name)}:\*\*\s*([^\n\r]*)",
+        rf"^{re.escape(field_name)}:\s*([^\n\r]*)",
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, text, flags=re.IGNORECASE | re.MULTILINE)
+        if match:
+            return match.group(1).strip()
+
+    return ""
+
+
+def _is_useful_field_value(value: str) -> bool:
+    lowered = value.strip().lower()
+
+    if not lowered:
+        return False
+
+    weak_values = [
+        "n/a",
+        "na",
+        "none",
+        "unknown",
+        "needs reproduction",
+        "unable to reproduce",
+        "needs repro",
+        "not provided",
+        "tbd",
+    ]
+
+    return not any(weak_value in lowered for weak_value in weak_values)
+
+
+def _has_useful_field_value(text: str, field_names: List[str]) -> bool:
+    return any(_is_useful_field_value(_extract_field_value(text, field_name)) for field_name in field_names)
+
+
+def _has_confirmed_reproducibility(text: str) -> bool:
+    fields = [
+        "Reproducible in staging?",
+        "Reproducible in production?",
+    ]
+
+    for field_name in fields:
+        value = _extract_field_value(text, field_name).lower()
+        if "yes" in value:
+            return True
+
+    return False
+
+
+def build_provided_evidence(issue: Dict[str, Any]) -> Dict[str, bool]:
+    body = str(issue.get("body", ""))
+
+    return {
+        "reproduction_steps": _contains_any(
+            body,
+            [
+                "## Action Performed",
+                "Steps to Reproduce",
+                "Reproduction steps",
+                "Action performed:",
+            ],
+        ),
+        "expected_behavior": _contains_any(
+            body,
+            [
+                "## Expected Result",
+                "Expected Result:",
+                "Expected behavior",
+                "Expected behaviour",
+            ],
+        ),
+        "actual_behavior": _contains_any(
+            body,
+            [
+                "## Actual Result",
+                "Actual Result:",
+                "Actual behavior",
+                "Actual behaviour",
+            ],
+        ),
+        "version": _has_useful_field_value(
+            body,
+            [
+                "Version Number",
+                "App version",
+                "Version",
+            ],
+        ),
+        "confirmed_reproducible": _has_confirmed_reproducibility(body),
+        "environment_or_platform": _contains_any(
+            body,
+            [
+                "Device used",
+                "## Platforms",
+                "Platform:",
+                "Environment:",
+                "Android",
+                "iOS",
+                "Windows",
+                "MacOS",
+                "Chrome",
+                "Safari",
+            ],
+        ),
+        "screenshots_or_video": _contains_any(
+            body,
+            [
+                "## Screenshots/Videos",
+                "Screenshots/Videos",
+                "Screenshot",
+                "Video",
+                "user-attachments",
+            ],
+        ),
+        "logs_or_error_output": _contains_any(
+            body,
+            [
+                "Logs:",
+                "Stack trace",
+                "Traceback",
+                "Error:",
+                "Exception",
+            ],
+        ),
+    }
+
+
 def build_triage_prompt(issue: Dict[str, Any]) -> str:
     issue_data = {
         "repo": issue.get("repo", ""),
@@ -39,6 +176,7 @@ def build_triage_prompt(issue: Dict[str, Any]) -> str:
         "updated_at": issue.get("updated_at", ""),
         "total_comments": issue.get("total_comments", 0),
         "fetched_comments": _compact_comments(issue.get("fetched_comments", [])),
+        "provided_evidence": build_provided_evidence(issue),
     }
 
     schema = triage_schema_json()
@@ -83,8 +221,27 @@ Priority rules:
 - P3: minor bug, question, documentation, cleanup, or low-impact improvement.
 
 Triage rules:
-- Use issue_type "needs-info" when key details are missing, such as reproduction steps, expected behavior, actual behavior, environment, logs, screenshots, or version information.
-- If the issue reports a crash but lacks reproduction steps or logs, use issue_type "needs-info".
+- Use the provided_evidence checklist in the GitHub issue data before deciding missing_information.
+- Treat evidence as already provided when the matching provided_evidence value is true.
+- Blank fields, "Unknown", "N/A", "Needs Reproduction", and "Unable to reproduce" do not count as provided evidence.
+- If provided_evidence.confirmed_reproducible is false for a bug report, include reproducibility confirmation in missing_information unless the issue is otherwise clearly actionable.
+- If provided_evidence.version is false for a versioned app issue, include version information in missing_information.
+- If the issue explicitly says "Needs Reproduction" or "Unable to reproduce", strongly consider issue_type "needs-info".
+- Do not ask for reproduction steps if provided_evidence.reproduction_steps is true.
+- Do not ask for expected behavior if provided_evidence.expected_behavior is true.
+- Do not ask for actual behavior if provided_evidence.actual_behavior is true.
+- Do not ask for environment, platform, browser, OS, or device details if provided_evidence.environment_or_platform is true.
+- Do not ask for version information if provided_evidence.version is true.
+- Do not ask for screenshots, video, logs, or error output if either provided_evidence.screenshots_or_video or provided_evidence.logs_or_error_output is true.
+- Use issue_type "needs-info" only when the issue is too incomplete to investigate.
+- If core evidence is present, keep issue_type as the real category such as "bug" and keep missing_information empty.
+- If missing_information is empty, do not include "needs-info" in suggested_labels.
+- If missing_information is empty, the draft_comment must not ask the reporter to provide more details.
+- If missing_information is empty, the draft_comment should suggest one investigation or reproduction next step using the provided evidence.
+- Prefer explicit fields such as "Device used", "Version Number", and "App Component" over broad platform checklist text.
+- If the exact browser or platform is ambiguous, say "the reported environment" instead of naming one specific browser.
+- Do not mention Safari unless Safari is clearly the reported browser. If the issue says "Mac / Chrome" or a combined "Chrome Safari" checklist label, avoid choosing Safari.
+- If the issue reports a crash but lacks reproduction steps and logs, use issue_type "needs-info".
 - Do not use issue_type "bug" when the report is too incomplete to investigate.
 - Do not claim a root cause is certain unless the issue provides strong evidence.
 - Do not say the issue is fixed.
@@ -108,6 +265,8 @@ Draft comment rules:
 - Do not use first-person plural words: we, us, our, ours, ourselves.
 - Summarize the issue in one short English sentence.
 - Ask only for missing information that is not already provided.
+- If missing_information is empty, do not ask for more information, logs, screenshots, reproduction steps, expected behavior, actual behavior, version, or environment.
+- If missing_information is empty, suggest one clear investigation next step instead.
 - Suggest one clear next step.
 - Keep it concise, natural, and non-repetitive.
 - Do not repeat words, questions, or requests.
@@ -115,7 +274,8 @@ Draft comment rules:
 - Do not say that GISA will fix the issue.
 - Do not use phrases like "we will fix", "help us fix", "resolve the issue", or "fix the problem".
 - Do not ask whether GISA can help.
-- Good draft_comment example: "GISA identified that the application crashes on startup. To triage this, share reproduction steps, expected behavior, actual behavior, environment details, and any logs or screenshots. This will help GISA narrow the failure path."
+- Good draft_comment example for incomplete reports: "GISA identified that the application crashes on startup. To triage this, share reproduction steps, environment details, and any logs or screenshots. This will help GISA narrow the failure path."
+- Good draft_comment example for complete reports: "GISA identified that sorting fails in the reported view while it works in the comparison view. Next step: reproduce this on the listed version and platform, then inspect the affected sorting path."
 
 JSON schema:
 {json.dumps(schema, indent=2)}
